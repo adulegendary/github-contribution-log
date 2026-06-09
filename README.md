@@ -1,24 +1,30 @@
 # github-contribution-log
-# Contribution [#]: [Issue Title]
+# Contribution [#]: [Bug]: Schedule Tab Shows 2 "Security Exception" on new account without admin
 
 **Contribution Number:** [1 / 2 / 3]  
-**Student:** [Your Name]  
-**Issue:** [GitHub issue link]  
-**Status:** [Phase I / Phase II / Phase III / Phase IV] [In Progress / Complete]
+**Student:** Adonai Weldemicael  
+**Issue:**(https://github.com/carlos-emr/carlos/issues/2689)
+**Status:** Phase I completed 
 
 ---
 
 ## Why I Chose This Issue
+Fits my skills — Java + a bit of SQL, which is what I know.
+Right difficulty — "good first issue," 
+Diagnosis already done — the reporter traced the cause and named the files, so I can focus on the fix.
+It's available — no one assigned, no PR in progress.
+Teaches the full workflow — reproduce → fix → test → PR
 
-[1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
 
 ---
 
 ## Understanding the Issue
 
-### Problem Description
+A new staff account in CARLOS gets a login but no permissions. So when that person logs in, the system lets them through the front door — but the first page it sends them to (the schedule) checks "are you allowed to see appointments?", the answer is "this person has no permissions at all," and instead of saying "access denied" nicely, the page crashes and pops up 2 error alerts.
 
-[In your own words, what's broken or missing?]
+### Problem Description
+When an admin creates a new user account, the account gets a login but no role (no permissions). The user can sign in, but the first page they land on the schedule checks whether they're allowed to view appointments. Since the account has no role, that check fails, the page errors out, and the user sees two "Security Exception" alerts instead of their schedule
+
 
 ### Expected Behavior
 
