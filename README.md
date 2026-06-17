@@ -36,9 +36,9 @@ Immediately after login, the schedule page returns HTTP 500 — SecurityExceptio
 
 ### Affected Components
 
-# SecurityAddSecurityHelper — creates the security login but never assigns a secUserRole (root cause)
-# SecurityInfoManagerImpl#hasPrivilege — denies access because the account has no role
-# BaseProviderViewGate2Action / ViewProviderControl2Action — throws the _appointment privilege check on the schedule landing page
+ 1. SecurityAddSecurityHelper — creates the security login but never assigns a secUserRole (root cause)
+ 2. SecurityInfoManagerImpl#hasPrivilege — denies access because the account has no role
+ 3. BaseProviderViewGate2Action / ViewProviderControl2Action — throws the _appointment privilege check on the schedule landing page
 
 ---
 
@@ -46,8 +46,8 @@ Immediately after login, the schedule page returns HTTP 500 — SecurityExceptio
 
 ### Environment Setup
 
-# Container deployment took extremely long to build. The slow step was a line in .devcontainer/development/Dockerfile that ran npx playwright install --with-deps chromium firefox, which downloads the Chromium and Firefox browsers (and system dependencies) at build time — a multi-hour download on a slow connection.
-# Resolution: Commented out / replaced that line with a simple echo so the build skips the Playwright browser download, which let the container deploy quickly. # (Trade-off: the in-container Playwright UI tests won't run until the line is re-enabled — fine here since the bug was reproduced via curl + SQL instead of browser automation.)
+  1. Container deployment took extremely long to build. The slow step was a line in .devcontainer/development/Dockerfile that ran npx playwright install --with-deps chromium firefox, which downloads the Chromium and Firefox browsers (and system dependencies) at build time — a multi-hour download on a slow connection.
+  2. Resolution: Commented out / replaced that line with a simple echo so the build skips the Playwright browser download, which let the container deploy quickly.   3. (Trade-off: the in-container Playwright UI tests won't run until the line is re-enabled — fine here since the bug was reproduced via curl + SQL instead of browser automation.)
 
 
 ### Steps to Reproduce
@@ -79,9 +79,9 @@ Immediately after login, the schedule page returns HTTP 500 — SecurityExceptio
 [High-level description of your fix approach]
 
 ### Implementation Plan
-   #  Edit only SecurityAddSecurityHelper.java.
-   #  Add role-assignment after the security persist; guard against double-insert if a role already exists.
-   #  Add a unit/integration test asserting a created account gets exactly one secUserRole.
+   1. Edit only SecurityAddSecurityHelper.java.
+   2. Add role-assignment after the security persist; guard against double-insert if a role already exists.
+   3. Add a unit/integration test asserting a created account gets exactly one secUserRole.
 Using UMPIRE framework (adapted):
 
 **Understand:** [Restate the problem]
