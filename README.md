@@ -4,7 +4,7 @@
 **Contribution Number:** [1 / 2 / 3]  
 **Student:** Adonai Weldemicael  
 **Issue:**(https://github.com/carlos-emr/carlos/issues/2689)
-**Status:** Phase I completed 
+**Status:** Phase II completed 
 
 ---
 
@@ -28,15 +28,17 @@ When an admin creates a new user account, the account gets a login but no role (
 
 ### Expected Behavior
 
-[What should happen?]
+A newly created provider account should log in and land on the schedule page normally, with no error alerts.
 
 ### Current Behavior
 
-[What actually happens?]
+Immediately after login, the schedule page returns HTTP 500 — SecurityException: missing required sec object (_appointment) — shown as two "Security Exception" alerts (or a full "CARLOS Error: 500" page).
 
 ### Affected Components
 
-[Which parts of the codebase are involved?]
+# SecurityAddSecurityHelper — creates the security login but never assigns a secUserRole (root cause)
+# SecurityInfoManagerImpl#hasPrivilege — denies access because the account has no role
+# BaseProviderViewGate2Action / ViewProviderControl2Action — throws the _appointment privilege check on the schedule landing page
 
 ---
 
@@ -44,19 +46,25 @@ When an admin creates a new user account, the account gets a login but no role (
 
 ### Environment Setup
 
-[Notes on setting up your local development environment - challenges you faced, how you solved them]
+# Container deployment took extremely long to build. The slow step was a line in .devcontainer/development/Dockerfile that ran npx playwright install --with-deps chromium firefox, which downloads the Chromium and Firefox browsers (and system dependencies) at build time — a multi-hour download on a slow connection.
+# Resolution: Commented out / replaced that line with a simple echo so the build skips the Playwright browser download, which let the container deploy quickly. # (Trade-off: the in-container Playwright UI tests won't run until the line is re-enabled — fine here since the bug was reproduced via curl + SQL instead of browser automation.)
+
 
 ### Steps to Reproduce
 
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+1. Log in as an admin (carlosdoc / carlos2026 / PIN 2026) and go to Administration → User Management. Create a new provider record, then create a login record for it — but do not assign a role.
+2. Log out, then log in with the new account's credentials.
+3. Observed result: Immediately after login, the schedule page fails with HTTP 500 — SecurityException: missing required sec object (_appointment) — surfaced as two "Security Exception" alerts (or a full "CARLOS Error: 500" page).
 
 ### Reproduction Evidence
 
-- **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
-- **My findings:** [What you discovered during reproduction]
+- **Commit showing reproduction:** [[Link to commit in your fork]](https://github.com/adulegendary/carlos/tree/fix-issue-2689)
+- **Screenshots/logs:** <img width="1397" height="897" alt="image" src="https://github.com/user-attachments/assets/125d6de9-371a-46cf-8617-75881efecb46" />
+
+
+- **My findings:** The account is created and saved correctly — login itself succeeds (the credentials are found and authenticated). The failure is not missing or unsaved data. The problem is that admin account creation persists the security login row but never creates a matching secUserRole row, so the new user has zero roles. Immediately after login, the schedule landing page (providercontrol) checks for _appointment read permission, which is granted only through roles — with no role, the check fails and BaseProviderViewGate2Action throws SecurityException: missing required sec object (_appointment). Struts has no result mapping for that exception, so it renders the error page as HTTP 500 (shown as two "Security Exception" alerts). Confirmed in the DB that the working seed user carlosdoc has roles (doctor, admin) while a freshly-created account has none — and assigning any role makes the 500 disappear, proving the missing role assignment is the root cause.
+
+
 
 ---
 
@@ -71,7 +79,9 @@ When an admin creates a new user account, the account gets a login but no role (
 [High-level description of your fix approach]
 
 ### Implementation Plan
-
+   #  Edit only SecurityAddSecurityHelper.java.
+   #  Add role-assignment after the security persist; guard against double-insert if a role already exists.
+   #  Add a unit/integration test asserting a created account gets exactly one secUserRole.
 Using UMPIRE framework (adapted):
 
 **Understand:** [Restate the problem]
