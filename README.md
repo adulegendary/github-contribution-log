@@ -4,7 +4,7 @@
 **Contribution Number:** [1 / 2 / 3]  
 **Student:** Adonai Weldemicael  
 **Issue:**(https://github.com/carlos-emr/carlos/issues/2689)
-**Status:** Phase II completed 
+**Status:** Phase III completed 
 
 ---
 
@@ -122,21 +122,31 @@ Using UMPIRE framework (adapted):
 
 ## Implementation Notes
 
-### Week [X] Progress
+### Week [1] Progress
+The root cause was in SecurityAddSecurityHelper.java — when an admin creates a new provider login, the process() method persisted the Security login record but never created a secUserRole row. The new user could authenticate but had zero role-derived privileges, causing the schedule landing page (providercontrol) to fail its _appointment r check with HTTP 500.
 
-[What you built this week, challenges faced, decisions made]
-
-### Week [Y] Progress
-
-[Continue documenting as you work]
+Fix: after securityDao.persist(s), a Secuserrole entity is now saved via SecuserroleDao.save() assigning a default role with activeyn=1. The role constant is marked with a TODO(#2689) pending confirmation of the final value from @yingbull — current placeholder is "doctor".
 
 ### Code Changes
+    Branch: fix-issue-2689
+    Key commits:
+    Integeration Test and End to End test in Progress
+    83a1d29 — issue fixed and unit test done
+    70a6588 — initial fix
+    dc15c4406 — local deployment confirmed, bug reproduced consistently
 
-- **Files modified:** [List]
-- **Key commits:** [Links to important commits]
-- **Approach decisions:** [Why you chose certain approaches]
+- **Files modified:** [SecurityAddSecurityHelper.java , CarlosUnitTestBase]
+- **Key commits:** [[Links to important commits](https://github.com/adulegendary/carlos.git)]
+### validation steps taken in Testing Strategy
+     Unit test and integeration Test has done
+     End to End test is in progress
+## Blocking
+     We waiting from the maintenare what we need to assign for the role for the admin 
+     This is belonges to admin -  @yingbull
 
----
+
+
+### Week [Y] Progress
 
 ## Pull Request
 
