@@ -4,7 +4,7 @@
 **Contribution Number:** [1 / 2 / 3]  
 **Student:** Adonai Weldemicael  
 **Issue:**(https://github.com/carlos-emr/carlos/issues/2689)
-**Status:** Phase III completed 
+**Status:** Phase IV completed ( but the issue is still blocked. The co-maintainer has reached out to the main maintainer to unblock my issue. I will wait until the end of this week for a response from the main maintainer. If the issue remains blocked, I will move on to a different issue so I can continue contributing)
 
 ---
 
@@ -78,13 +78,14 @@ Immediately after login, the schedule page returns HTTP 500 — SecurityExceptio
 
 [High-level description of your fix approach]
 
-### Implementation Plan
+### Implementation Plan[ [Link to your branch/commits as you work]](https://github.com/adulegendary/carlos/tree/fix-issue-2689)
+
    1. Edit only SecurityAddSecurityHelper.java.
    2. Add role-assignment after the security persist; guard against double-insert if a role already exists.
    3. Add a unit/integration test asserting a created account gets exactly one secUserRole.
 Using UMPIRE framework (adapted):
 
-**Understand:** [Restate the problem]
+
 
 **Match:** [What similar patterns/solutions exist in the codebase?]
 
@@ -93,11 +94,13 @@ Using UMPIRE framework (adapted):
 2. [Add function Z]
 3. [Update tests]
 
-**Implement:** [Link to your branch/commits as you work]
+**Implement:** [[Link to your branch/commits as you work]](https://github.com/adulegendary/carlos/tree/fix-issue-2689)
 
 **Review:** [Self-review checklist - does it follow the project's contribution guidelines?]
 
-**Evaluate:** [How will you verify it works?]
+**Evaluate:** 
+   1. It will follow all the test casess and pass 
+   2. Check if the output is co
 
 ---
 
@@ -105,9 +108,9 @@ Using UMPIRE framework (adapted):
 
 ### Unit Tests
 
-- [ ] Test case 1: [Description]
-- [ ] Test case 2: [Description]
-- [ ] Test case 3: [Description]
+- [x] Test case 1: [Description]
+- [x] Test case 2: [Description]
+- [x] Test case 3: [Description]
 
 ### Integration Tests
 
@@ -159,20 +162,22 @@ Fix: after securityDao.persist(s), a Secuserrole entity is now saved via Secuser
 - [Date]: [How you addressed it]
 
 **Status:** [Awaiting review / Iterating / Approved / Merged]
-
+ Blocked-
 ---
 
 ## Learnings & Reflections
+Through this project, I learned how to debug and fix bugs in an unfamiliar codebase. I developed a structured debugging process: first reproducing the issue, then monitoring and tracing the root cause, applying a fix, and finally verifying the solution through testing. I also learned the importance of following the testing pyramid by writing unit, integration, and end-to-end tests to ensure the fix did not introduce regressions.
 
 ### Technical Skills Gained
 
-[What you learned technically]
+I gained hands-on experience with several technologies and tools, including Apache Tomcat, the Spring Framework, JUnit for unit testing, and Playwright for end-to-end testing. I also improved my understanding of how these tools work together in a large Java application.
 
 ### Challenges Overcome
 
-[What was hard and how you solved it]
+The biggest challenge was not the technical implementation itself, but understanding a large and unfamiliar codebase. It took time to understand the application's architecture, trace the bug to its root cause, and determine the correct place to implement the fix. 
 
 ### What I'd Do Differently Next Time
+Next time, I would spend more time understanding the project before diving into the code. I would carefully read the README and project documentation, study the issue requirements, and familiarize myself with the application's architecture. Building a solid understanding upfront would help me identify the root cause more quickly and make more confident code changes.
 
 [Reflection on your process]
 
