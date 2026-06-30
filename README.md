@@ -71,28 +71,24 @@ Immediately after login, the schedule page returns HTTP 500 — SecurityExceptio
 ## Solution Approach
 
 ### Analysis
-
+The root cause was that SecurityAddSecurityHelper successfully created and persisted a new security login but never created a corresponding SecUserRole entry. As a result, newly created users could authenticate successfully but had no role-based permissions. When the application redirected the user to the schedule page after login, the authorization check for the _appointment privilege failed, resulting in an HTTP 500 error and two "Security Exception" alerts.
 [Your analysis of the root cause - what's causing the issue?]
 
 ### Proposed Solution
+After creating a new user account, automatically assign the user a default role using the existing SecUserRoleDao. This gives the new user the required permissions to access the application.
 
-[High-level description of your fix approach]
+### Status
+Blocked – Awaiting maintainer confirmation on the default role assignment before making PR.
 
 ### Implementation Plan[ [Link to your branch/commits as you work]](https://github.com/adulegendary/carlos/tree/fix-issue-2689)
-
+ **Plan:** [Step-by-step implementation plan]
    1. Edit only SecurityAddSecurityHelper.java.
    2. Add role-assignment after the security persist; guard against double-insert if a role already exists.
    3. Add a unit/integration test asserting a created account gets exactly one secUserRole.
-Using UMPIRE framework (adapted):
-
 
 
 **Match:** [What similar patterns/solutions exist in the codebase?]
 
-**Plan:** [Step-by-step implementation plan]
-1. [Modify file X to do Y]
-2. [Add function Z]
-3. [Update tests]
 
 **Implement:** [[Link to your branch/commits as you work]](https://github.com/adulegendary/carlos/tree/fix-issue-2689)
 
@@ -108,18 +104,22 @@ Using UMPIRE framework (adapted):
 
 ### Unit Tests
 
-- [x] Test case 1: [Description]
-- [x] Test case 2: [Description]
-- [x] Test case 3: [Description]
+- [x] Verified that a newly created account automatically receives a default SecUserRole.
+- [x] Verified that duplicate roles are not created if one already exists.
+- [x] Verified that existing account creation behavior remains unchanged.
 
-### Integration Tests
+### Integration Test
 
-- [ ] Integration scenario 1
-- [ ] Integration scenario 2
-
+- [x] Verified that a newly created user can successfully log in after account creation.
+- [x] Verified that the schedule page loads without throwing a SecurityException.
+### End-to-End Tests
+- [ ] End-to-end Playwright tests are still in progress due to the pending maintainer confirmation regarding the default role assignment.
 ### Manual Testing
+- [x] Created a new provider account through the administration page.
+- [x] Confirmed that the security login and role were successfully persisted.
+- [x] Logged in using the newly created account.
+- [x] Verified that the schedule page loaded successfully without displaying the previous HTTP 500 error or "Security Exception" alerts.
 
-[What you tested manually and results]
 
 ---
 
@@ -152,12 +152,15 @@ Fix: after securityDao.persist(s), a Secuserrole entity is now saved via Secuser
 ### Week [Y] Progress
 
 ## Pull Request
+ - [ ] Pending maintainer confirmation before submitting the final pull request.
 
 **PR Link:** [GitHub PR URL when submitted]
 
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+**PR Description:** [ Pending ]
+    
+This change fixes Issue #2689 by ensuring that newly created user accounts receive a default SecUserRole immediately after the security login is created.Previously, new users could authenticate successfully but had no permissions, causing an HTTP 500 error when accessing the schedule page. The fix also includes automated tests to verify the new behavior and prevent regressions.
 
-**Maintainer Feedback:**
+**Maintainer Feedback:**[Haven't submitted yet]
 - [Date]: [Summary of feedback received]
 - [Date]: [How you addressed it]
 
@@ -179,12 +182,14 @@ The biggest challenge was not the technical implementation itself, but understan
 ### What I'd Do Differently Next Time
 Next time, I would spend more time understanding the project before diving into the code. I would carefully read the README and project documentation, study the issue requirements, and familiarize myself with the application's architecture. Building a solid understanding upfront would help me identify the root cause more quickly and make more confident code changes.
 
-[Reflection on your process]
-
 ---
 
 ## Resources Used
 
-- [Link to helpful documentation]
-- [Tutorial or Stack Overflow post that helped]
-- [GitHub issues or discussions that helped]
+- CARLOS Project README
+- CLAUDE.md contribution guide
+- Spring Framework Documentation
+- JUnit 5 Documentation
+- Playwright Documentation
+- GitHub Issue #2689 discussion
+- Discussions with the CARLOS project maintainers like @Ben-Heerema
